@@ -1,6 +1,6 @@
 {
   "name": "@innova2/winston-pg",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight winston transport to PostgreSQL.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,12 +33,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/InnovA2/winston-pg-nest.git"
+    "url": "git+https://github.com/InnovA2/winston-pg.git"
   },
   "author": "Angéline Toussaint & Adrien Martineau",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/InnovA2/url-builder/issues"
+    "url": "https://github.com/InnovA2/winston-pg/issues"
   },
-  "homepage": "https://github.com/InnovA2/url-builder#readme"
+  "homepage": "https://github.com/InnovA2/winston-pg#readme"
 }
