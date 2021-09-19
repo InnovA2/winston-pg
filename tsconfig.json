@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "module": "commonjs",
+        "target": "es2015",
+        "declaration": true,
+        "outDir": "./dist",
+        "lib": [
+            "es2018"
+        ]
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
+}
