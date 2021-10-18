@@ -98,7 +98,7 @@ class PostgresTransport extends TransportStream {
                 client.release();
                 if (options.limit) {
                     const count = yield client.query(countQuery.toQuery());
-                    const page = new paginated_data_dto_1.PaginatedDataDto(result.rows, options.limit, options.page, count.rows.length > 0 ? count.rows[0].total : 0);
+                    const page = new paginated_data_dto_1.PaginatedDataDto(result.rows, result.rowCount, options.limit, options.page, count.rows.length > 0 ? count.rows[0].total : 0);
                     return resolve(page);
                 }
                 return resolve(result.rows);

@@ -4,5 +4,5 @@ export declare class PaginatedDataDto<T> {
     currentPage: number;
     totalPages: number;
     totalItems: number;
-    constructor(items: T[], size: number, page: number, totalItems: number);
+    constructor(items: T[], size: number, limit: number, page: number, totalItems: number);
 }

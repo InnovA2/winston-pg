@@ -124,6 +124,7 @@ export class PostgresTransport<T = DefaultTable> extends TransportStream {
 
                         const page = new PaginatedDataDto<T>(
                             result.rows,
+                            result.rowCount,
                             options.limit,
                             options.page,
                             count.rows.length > 0 ? count.rows[0].total : 0
