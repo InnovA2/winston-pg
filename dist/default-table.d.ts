@@ -1,7 +1,7 @@
 export declare class DefaultTable {
     id: string;
     level: string;
-    timestamp: Date;
+    timestamp: string;
     context: string;
     message: string;
     stack: any;

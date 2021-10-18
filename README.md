@@ -37,44 +37,113 @@ const logger = new Logger({
 });
 ```
 
-### With your own table
+> The default table contains :
+```ts
+export class DefaultTable {
+    id: string;
+    level: string;
+    timestamp: string;
+    context: string;
+    message: string;
+    stack: any;
+}
+```
+
+### With your own table definition
 ```ts
 export class MyLogTable {
     level: string;
-    timestamp: str;
+    timestamp: string;
     message: string;
     stack: any;
 }
 ```
 ```ts
-const logger = new Logger({
-  transports: [
-    new Postgres({
-      connectionString: 'your connection string',
-      maxPool: 10,
-      level: 'info',
-      tableName: 'winston_logs',
-      tableColumns: [
+const pgTransport = new Postgres<MyLogTable>({
+    connectionString: 'your connection string',
+    maxPool: 10,
+    level: 'info',
+    tableName: 'winston_logs',
+    tableColumns: [
         {
-          name: 'level',
-          dataType: 'VARCHAR'
+            name: 'level',
+            dataType: 'VARCHAR'
         },
         {
-          name: 'timestamp',
-          dataType: 'TIMESTAMP'
+            name: 'timestamp',
+            dataType: 'TIMESTAMP'
         },
         {
-          name: 'message',
-          dataType: 'VARCHAR'
+            name: 'message',
+            dataType: 'VARCHAR'
         },
         {
-          name: 'stack',
-          dataType: 'JSON'
+            name: 'stack',
+            dataType: 'JSON'
         }
-      ],
-    })
-  ]
+    ],
 });
+
+const logger = new Logger({
+  transports: [pgTransport]
+});
+```
+
+### Retrieve logs
+You can use the query() method like :
+```ts
+pgTransport.query({
+    fields: ['level', 'context'],
+    limit: 20,
+    page: 3, // Page 4 => first page is 0
+    where: [
+        {
+            field: 'level',
+            operator: 'equals',
+            value: 'info',
+        },
+        {
+            field: 'timestamp',
+            operator: 'lte',
+            value: '2021-10-12',
+        },
+    ],
+    order: [
+        ['id', 'DESC'],
+    ],
+});
+```
+
+> Note: the query() method return a Promise with results as PaginatedData
+> if the limit option is filled or array otherwise 
+
+Depending on the operator, the type of value can be different.
+For example :
+```ts
+pgTransport.query({
+   where: [
+       {
+           field: 'timestamp',
+           operator: 'between',
+           value: ['2021-10-11', '2021-10-16'],
+       },
+   ],
+});
+```
+
+The list of operators with value's type :
+```ts
+type EqualsOperator = 'equals' | 'notEquals';
+// value can be : string | number | boolean;
+
+type TextOperator = 'like' | 'notLike' | 'ilike' | 'notIlike' | 'rlike';
+// value can be : string;
+
+type CalcOperator = 'gt' | 'gte' | 'lt' | 'lte';
+// value can be : string | number;
+
+type BetweenOperator = 'between' | 'notBetween';
+// value can be : [string, string];
 ```
 
 ## :balance_scale: Licence

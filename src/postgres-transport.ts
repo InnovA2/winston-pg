@@ -1,14 +1,16 @@
 import * as TransportStream from 'winston-transport';
-import { PostgresOptions } from './postgres-options';
-import { Pool } from 'pg';
-import { Column, Sql, Table } from 'sql-ts';
-import { PostgresColumnDefinition } from './postgres-column-definition';
-import { Constants } from './constants';
-import { DefaultTable } from './default-table';
+import {PostgresOptions} from './postgres-options';
+import {Pool} from 'pg';
+import {Column, Sql, TableWithColumns} from 'sql-ts';
+import {PostgresColumnDefinition} from './postgres-column-definition';
+import {Constants} from './constants';
+import {DefaultTable} from './default-table';
+import {QueryOptions} from "./query-options";
+import {PaginatedDataDto} from "./paginated-data.dto";
 
 export class PostgresTransport<T = DefaultTable> extends TransportStream {
     private readonly schema: string;
-    private readonly table: Table<T>;
+    private readonly table: TableWithColumns<T>;
     private readonly tableName: string;
     private readonly tableColumns: PostgresColumnDefinition<T>[];
 
@@ -30,7 +32,7 @@ export class PostgresTransport<T = DefaultTable> extends TransportStream {
 
         this.sql = new Sql(Constants.DIALECT);
 
-        this.table = this.sql.define({
+        this.table = this.sql.define<T>({
             name: this.tableName,
             schema: this.schema,
             columns: this.tableColumns,
@@ -61,9 +63,10 @@ export class PostgresTransport<T = DefaultTable> extends TransportStream {
         }
 
         const columns = this.hydrateColumns(args, table.columns);
+        const query = table.insert(...columns.filter(c => c.dataType !== 'SERIAL')).toQuery();
 
         return pool.connect().then(client => client
-            .query(table.insert(...columns.filter(c => c.dataType !== 'SERIAL')).toQuery())
+            .query(query)
             .then(() => {
                 client.release();
                 this.emit('logged', args);
@@ -74,6 +77,68 @@ export class PostgresTransport<T = DefaultTable> extends TransportStream {
                 this.emit('error', e.stack);
                 return callback(e.stack);
             }));
+    }
+
+    query(options: QueryOptions<T>): Promise<T[] | PaginatedDataDto<T>> {
+        const { pool, table } = this;
+
+        const fields = options.fields || this.tableColumns.map(c => c.name);
+
+        let query = table.select(fields);
+        let countQuery = table.select(table.count('total'));
+
+        if (options.where) {
+            const where = options.where.map((opt) => {
+                if (opt.operator === 'between' || opt.operator === 'notBetween') {
+                    return table[opt.field][opt.operator](opt.value[0], opt.value[1]);
+                }
+                return table[opt.field][opt.operator](opt.value);
+            })
+
+            query = query.where(where);
+            countQuery = countQuery.where(where);
+        }
+
+        if (options.order) {
+            const order = options.order.map(([key, value]) => {
+                return table[key][value.toLowerCase()]()
+            })
+
+            query = query.order(order);
+        }
+
+        if (options.limit) {
+            const offset = options.page ? (options.limit * options.page) : 0;
+
+            query = query.offset(offset).limit(options.limit);
+        }
+
+        return new Promise((resolve, reject) => {
+            pool.connect().then(client => client
+                .query(query.toQuery())
+                .then(async (result) => {
+                    client.release();
+
+                    if (options.limit) {
+                        const count = await client.query(countQuery.toQuery());
+
+                        const page = new PaginatedDataDto<T>(
+                            result.rows,
+                            options.limit,
+                            options.page,
+                            count.rows.length > 0 ? count.rows[0].total : 0
+                        );
+
+                        return resolve(page);
+                    }
+
+                    return resolve(result.rows);
+                })
+                .catch((e) => {
+                    client.release();
+                    reject(e.stack);
+                }));
+        });
     }
 
     private hydrateColumns(args: any, columns: Column<T>[]): Column<T>[] {
