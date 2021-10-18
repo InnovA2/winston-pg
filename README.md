@@ -6,6 +6,7 @@ A easy to use Winston 3.x transport for PostgreSQL database.
 - [Usage](#memo-usage)
   - [With default table definition](#with-default-table-definition)
   - [With your own table](#with-your-own-table)
+  - [Retrieve logs](#retrieve-logs)
 - [Licence](#balance_scale-licence)
 - [Authors](#busts_in_silhouette-authors)
 - [Contributors](#handshake-contributors)
