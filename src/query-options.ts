@@ -1,4 +1,4 @@
-declare namespace Comparison {
+export declare namespace Comparison {
     type EqualsOperator = 'equals' | 'notEquals';
 
     type TextOperator = 'like' | 'notLike' | 'ilike' | 'notIlike' | 'rlike';
@@ -22,7 +22,7 @@ declare namespace Comparison {
     });
 }
 
-declare namespace Order {
+export declare namespace Order {
     type Value = 'ASC' | 'DESC';
 
     type Options<T> = [keyof T, Value];

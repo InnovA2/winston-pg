@@ -5,21 +5,21 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "/dist"
+    "dist/**/*"
   ],
   "peerDependencies": {
     "winston": "^3"
   },
   "dependencies": {
-    "@types/pg": "^8.6.1",
+    "@types/pg": "^8.6.6",
     "logform": "^2.2.0",
-    "pg": "^8.7.1",
+    "pg": "^8.7.3",
     "sql-ts": "^5.2.3",
-    "winston-transport": "^4.4.0"
+    "winston-transport": "^4.4.2"
   },
   "devDependencies": {
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.4"
   },
   "keywords": [
     "winston",
