@@ -1,4 +1,4 @@
-export { Constants } from './constants';
+export { PostgresConstants } from './postgres.constants';
 export { PostgresTransport } from './postgres-transport';
 export { PostgresOptions } from './postgres-options';
 export { PostgresColumnDefinition } from './postgres-column-definition';

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PaginatedDataDto = exports.DefaultTable = exports.PostgresTransport = exports.Constants = void 0;
-var constants_1 = require("./constants");
-Object.defineProperty(exports, "Constants", { enumerable: true, get: function () { return constants_1.Constants; } });
+exports.PaginatedDataDto = exports.DefaultTable = exports.PostgresTransport = exports.PostgresConstants = void 0;
+var postgres_constants_1 = require("./postgres.constants");
+Object.defineProperty(exports, "PostgresConstants", { enumerable: true, get: function () { return postgres_constants_1.PostgresConstants; } });
 var postgres_transport_1 = require("./postgres-transport");
 Object.defineProperty(exports, "PostgresTransport", { enumerable: true, get: function () { return postgres_transport_1.PostgresTransport; } });
 var default_table_1 = require("./default-table");
