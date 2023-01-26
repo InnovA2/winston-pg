@@ -5,7 +5,7 @@ A easy to use Winston 3.x transport for PostgreSQL database.
 - [Installation](#hammer_and_wrench-installation)
 - [Usage](#memo-usage)
   - [With default table definition](#with-default-table-definition)
-  - [With your own table](#with-your-own-table)
+  - [With your own table](#with-your-own-table-definition)
   - [Retrieve logs](#retrieve-logs)
 - [Licence](#balance_scale-licence)
 - [Authors](#busts_in_silhouette-authors)
@@ -53,10 +53,14 @@ export class DefaultTable {
 ### With your own table definition
 ```ts
 export class MyLogTable {
+    id: string;
     level: string;
     timestamp: string;
+    context: string;
     message: string;
     stack: any;
+    input: any;
+    output: any;
 }
 ```
 ```ts
@@ -66,6 +70,12 @@ const pgTransport = new Postgres<MyLogTable>({
     level: 'info',
     tableName: 'winston_logs',
     tableColumns: [
+        {
+          name: 'id',
+          dataType: 'SERIAL',
+          primaryKey: true,
+          unique: true,
+        },
         {
             name: 'level',
             dataType: 'VARCHAR'
@@ -79,9 +89,21 @@ const pgTransport = new Postgres<MyLogTable>({
             dataType: 'VARCHAR'
         },
         {
+            name: 'context',
+            dataType: 'VARCHAR'
+        },
+        {
             name: 'stack',
             dataType: 'JSON'
-        }
+        },
+        {
+          name: 'input',
+          dataType: 'JSON',
+        },
+        {
+          name: 'output',
+          dataType: 'JSON',
+        },
     ],
 });
 
