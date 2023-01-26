@@ -1,7 +1,7 @@
 import { PostgresColumnDefinition } from './postgres-column-definition';
 import { DefaultTable } from './default-table';
 
-export class Constants {
+export class PostgresConstants {
     static readonly DIALECT = 'postgres';
 
     static readonly DEFAULT_LEVEL = 'info';

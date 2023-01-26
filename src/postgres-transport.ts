@@ -1,12 +1,12 @@
 import * as TransportStream from 'winston-transport';
-import {PostgresOptions} from './postgres-options';
-import {Pool} from 'pg';
-import {Column, Sql, TableWithColumns} from 'sql-ts';
-import {PostgresColumnDefinition} from './postgres-column-definition';
-import {Constants} from './constants';
-import {DefaultTable} from './default-table';
-import {QueryOptions} from "./query-options";
-import {PaginatedDataDto} from "./paginated-data.dto";
+import { PostgresOptions } from './postgres-options';
+import { Pool } from 'pg';
+import { Column, Sql, TableWithColumns } from 'sql-ts';
+import { PostgresColumnDefinition } from './postgres-column-definition';
+import { PostgresConstants } from './postgres.constants';
+import { DefaultTable } from './default-table';
+import { QueryOptions } from "./query-options";
+import { PaginatedDataDto } from "./paginated-data.dto";
 
 export class PostgresTransport<T = DefaultTable> extends TransportStream {
     private readonly schema: string;
@@ -24,13 +24,13 @@ export class PostgresTransport<T = DefaultTable> extends TransportStream {
 
         super(options);
 
-        this.level = options.level || Constants.DEFAULT_LEVEL;
+        this.level = options.level || PostgresConstants.DEFAULT_LEVEL;
         this.silent = options.silent || false;
-        this.schema = options.schema || Constants.DEFAULT_SCHEMA;
-        this.tableName = options.tableName || Constants.DEFAULT_TABLE_NAME;
-        this.tableColumns = options.tableColumns || Constants.DEFAULT_TABLE_COLUMNS;
+        this.schema = options.schema || PostgresConstants.DEFAULT_SCHEMA;
+        this.tableName = options.tableName || PostgresConstants.DEFAULT_TABLE_NAME;
+        this.tableColumns = options.tableColumns || PostgresConstants.DEFAULT_TABLE_COLUMNS;
 
-        this.sql = new Sql(Constants.DIALECT);
+        this.sql = new Sql(PostgresConstants.DIALECT);
 
         this.table = this.sql.define<T>({
             name: this.tableName,
@@ -40,7 +40,7 @@ export class PostgresTransport<T = DefaultTable> extends TransportStream {
 
         this.pool = new Pool({
             connectionString: options.connectionString,
-            max: options.maxPool || Constants.DEFAULT_POOL,
+            max: options.maxPool || PostgresConstants.DEFAULT_POOL,
             ssl: options.ssl || false,
         });
 
@@ -144,13 +144,15 @@ export class PostgresTransport<T = DefaultTable> extends TransportStream {
 
     private hydrateColumns(args: any, columns: Column<T>[]): Column<T>[] {
         return columns.map((column) => {
+            const value = args[column.name];
+
             if (column.dataType === 'JSON') {
-                return column.value(JSON.stringify(args[column.name]));
+                return column.value(JSON.stringify(value));
             } else if (['TIMESTAMP', 'TIMESTAMPTZ'].includes(column.dataType)) {
                 return column.value('NOW()');
             }
 
-            return column.value(args[column.name]);
+            return column.value(value ?? column.defaultValue);
         })
     }
 }

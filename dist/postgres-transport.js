@@ -13,7 +13,7 @@ exports.PostgresTransport = void 0;
 const TransportStream = require("winston-transport");
 const pg_1 = require("pg");
 const sql_ts_1 = require("sql-ts");
-const constants_1 = require("./constants");
+const postgres_constants_1 = require("./postgres.constants");
 const paginated_data_dto_1 = require("./paginated-data.dto");
 class PostgresTransport extends TransportStream {
     constructor(options) {
@@ -21,12 +21,12 @@ class PostgresTransport extends TransportStream {
             throw new Error("Postgres transport requires \"connectionString\".");
         }
         super(options);
-        this.level = options.level || constants_1.Constants.DEFAULT_LEVEL;
+        this.level = options.level || postgres_constants_1.PostgresConstants.DEFAULT_LEVEL;
         this.silent = options.silent || false;
-        this.schema = options.schema || constants_1.Constants.DEFAULT_SCHEMA;
-        this.tableName = options.tableName || constants_1.Constants.DEFAULT_TABLE_NAME;
-        this.tableColumns = options.tableColumns || constants_1.Constants.DEFAULT_TABLE_COLUMNS;
-        this.sql = new sql_ts_1.Sql(constants_1.Constants.DIALECT);
+        this.schema = options.schema || postgres_constants_1.PostgresConstants.DEFAULT_SCHEMA;
+        this.tableName = options.tableName || postgres_constants_1.PostgresConstants.DEFAULT_TABLE_NAME;
+        this.tableColumns = options.tableColumns || postgres_constants_1.PostgresConstants.DEFAULT_TABLE_COLUMNS;
+        this.sql = new sql_ts_1.Sql(postgres_constants_1.PostgresConstants.DIALECT);
         this.table = this.sql.define({
             name: this.tableName,
             schema: this.schema,
@@ -34,7 +34,7 @@ class PostgresTransport extends TransportStream {
         });
         this.pool = new pg_1.Pool({
             connectionString: options.connectionString,
-            max: options.maxPool || constants_1.Constants.DEFAULT_POOL,
+            max: options.maxPool || postgres_constants_1.PostgresConstants.DEFAULT_POOL,
             ssl: options.ssl || false,
         });
         this.pool.connect()
@@ -111,13 +111,14 @@ class PostgresTransport extends TransportStream {
     }
     hydrateColumns(args, columns) {
         return columns.map((column) => {
+            const value = args[column.name];
             if (column.dataType === 'JSON') {
-                return column.value(JSON.stringify(args[column.name]));
+                return column.value(JSON.stringify(value));
             }
             else if (['TIMESTAMP', 'TIMESTAMPTZ'].includes(column.dataType)) {
                 return column.value('NOW()');
             }
-            return column.value(args[column.name]);
+            return column.value(value !== null && value !== void 0 ? value : column.defaultValue);
         });
     }
 }
