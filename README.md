@@ -25,10 +25,13 @@ npm install winston
 ## :memo: Usage
 ### With default table definition
 The table is created automatically in case you don't have a log table.
+
 ```ts
+import { PostgresTransport } from '@innova2/postgres-transport';
+
 const logger = new Logger({
   transports: [
-    new Postgres({
+    new PostgresTransport({
       connectionString: 'your connection string',
       maxPool: 10,
       level: 'info',
@@ -64,7 +67,7 @@ export class MyLogTable {
 }
 ```
 ```ts
-const pgTransport = new Postgres<MyLogTable>({
+const pgTransport = new PostgresTransport<MyLogTable>({
     connectionString: 'your connection string',
     maxPool: 10,
     level: 'info',
