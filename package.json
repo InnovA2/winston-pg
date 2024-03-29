@@ -7,6 +7,9 @@
   "files": [
     "dist/**/*"
   ],
+  "scripts": {
+    "build": "tsc"
+  },
   "peerDependencies": {
     "winston": "^3"
   },

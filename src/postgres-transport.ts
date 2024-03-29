@@ -1,4 +1,4 @@
-import * as TransportStream from 'winston-transport';
+import TransportStream = require('winston-transport');
 import { PostgresOptions } from './postgres-options';
 import { Pool } from 'pg';
 import { Column, Sql, TableWithColumns } from 'sql-ts';
