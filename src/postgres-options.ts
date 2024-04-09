@@ -15,7 +15,7 @@ export interface PostgresOptions<T> extends TransportStreamOptions {
     /**
      * Ssl active
      */
-    ssl?: {rejectUnauthorized :boolean } | boolean;
+    ssl?: { rejectUnauthorized: boolean } | boolean;
 
     /**
      * Schema of the database
