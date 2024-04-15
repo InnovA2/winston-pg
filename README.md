@@ -182,3 +182,4 @@ type BetweenOperator = 'between' | 'notBetween';
 ## :handshake: Contributors
 Do not hesitate to participate in the project!
 Contributors list will be displayed below.
+- [toddhalfpenny](https://github.com/toddhalfpenny)
