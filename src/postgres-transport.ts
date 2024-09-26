@@ -13,6 +13,7 @@ export class PostgresTransport<T = DefaultTable> extends TransportStream {
     private readonly table: TableWithColumns<T>;
     private readonly tableName: string;
     private readonly tableColumns: PostgresColumnDefinition<T>[];
+    private readonly timezone: string;
 
     private readonly sql: Sql;
     private readonly pool: Pool;
@@ -24,12 +25,18 @@ export class PostgresTransport<T = DefaultTable> extends TransportStream {
 
         super(options);
 
+        // Define options
         this.level = options.level || PostgresConstants.DEFAULT_LEVEL;
         this.silent = options.silent || false;
         this.schema = options.schema || PostgresConstants.DEFAULT_SCHEMA;
         this.tableName = options.tableName || PostgresConstants.DEFAULT_TABLE_NAME;
         this.tableColumns = options.tableColumns || PostgresConstants.DEFAULT_TABLE_COLUMNS;
 
+        if (options.timezone) {
+            this.timezone = options.timezone;
+        }
+
+        // Define table properties
         this.sql = new Sql(PostgresConstants.DIALECT);
 
         this.table = this.sql.define<T>({
@@ -149,7 +156,8 @@ export class PostgresTransport<T = DefaultTable> extends TransportStream {
             if (column.dataType === 'JSON') {
                 return column.value(JSON.stringify(value));
             } else if (['TIMESTAMP', 'TIMESTAMPTZ'].includes(column.dataType)) {
-                return column.value('NOW()');
+                const tz = this.timezone ? ` at time zone '${this.timezone}'` : '';
+                return column.value(`NOW()${tz}`);
             }
 
             return column.value(value ?? column.defaultValue);
