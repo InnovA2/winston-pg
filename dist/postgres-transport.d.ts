@@ -8,6 +8,7 @@ export declare class PostgresTransport<T = DefaultTable> extends TransportStream
     private readonly table;
     private readonly tableName;
     private readonly tableColumns;
+    private readonly timezone;
     private readonly sql;
     private readonly pool;
     constructor(options: PostgresOptions<T>);

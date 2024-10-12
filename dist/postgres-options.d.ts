@@ -27,4 +27,8 @@ export interface PostgresOptions<T> extends TransportStreamOptions {
      * Fields of the table
      */
     tableColumns?: PostgresColumnDefinition<T>[];
+    /**
+     * Timezone of the dates (e.g. 'utc+2')
+     */
+    timezone?: string;
 }
