@@ -21,11 +21,16 @@ class PostgresTransport extends TransportStream {
             throw new Error("Postgres transport requires \"connectionString\".");
         }
         super(options);
+        // Define options
         this.level = options.level || postgres_constants_1.PostgresConstants.DEFAULT_LEVEL;
         this.silent = options.silent || false;
         this.schema = options.schema || postgres_constants_1.PostgresConstants.DEFAULT_SCHEMA;
         this.tableName = options.tableName || postgres_constants_1.PostgresConstants.DEFAULT_TABLE_NAME;
         this.tableColumns = options.tableColumns || postgres_constants_1.PostgresConstants.DEFAULT_TABLE_COLUMNS;
+        if (options.timezone) {
+            this.timezone = options.timezone;
+        }
+        // Define table properties
         this.sql = new sql_ts_1.Sql(postgres_constants_1.PostgresConstants.DIALECT);
         this.table = this.sql.define({
             name: this.tableName,
@@ -116,7 +121,8 @@ class PostgresTransport extends TransportStream {
                 return column.value(JSON.stringify(value));
             }
             else if (['TIMESTAMP', 'TIMESTAMPTZ'].includes(column.dataType)) {
-                return column.value('NOW()');
+                const tz = this.timezone ? ` at time zone '${this.timezone}'` : '';
+                return column.value(`NOW()${tz}`);
             }
             return column.value(value !== null && value !== void 0 ? value : column.defaultValue);
         });
