@@ -48,8 +48,11 @@ class PostgresTransport extends TransportStream {
             .then(() => client.release())
             .catch((e) => {
             client.release();
-            throw e.stack;
-        }));
+            throw e;
+        })).catch((e) => {
+            var _a;
+            (_a = this.emit) === null || _a === void 0 ? void 0 : _a.call(this, 'error', e);
+        });
     }
     log(args, callback) {
         const { silent, pool, table } = this;

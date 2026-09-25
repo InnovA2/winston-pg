@@ -1,10 +1,11 @@
 {
     "compilerOptions": {
-        "baseUrl": "./",
         "module": "commonjs",
         "target": "es2015",
         "declaration": true,
+        "rootDir": "./src",
         "outDir": "./dist",
+        "strict": false,
         "lib": [
             "es2018"
         ]
