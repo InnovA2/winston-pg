@@ -57,9 +57,11 @@ export class PostgresTransport<T = DefaultTable> extends TransportStream {
                 .then(() => client.release())
                 .catch((e) => {
                     client.release();
-                    throw e.stack;
+                    throw e;
                 })
-            );
+            ).catch((e: unknown) => {
+                this.emit?.('error', e);
+            });
     }
 
     log(args, callback) {
