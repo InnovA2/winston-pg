@@ -183,3 +183,4 @@ type BetweenOperator = 'between' | 'notBetween';
 Do not hesitate to participate in the project!
 Contributors list will be displayed below.
 - [toddhalfpenny](https://github.com/toddhalfpenny)
+- [devprofile98](https://github.com/devprofile98)
